@@ -1,20 +1,20 @@
 #include <string.h>
 
-/* This example shows how to use the MQTT <--> Serial bridge
+/*
+This example shows how to use the MQTT <--> Serial bridge
 feature in  ThingDesktop. 
+
 You can get this from http://www.thingstud.io/downloads/ThingDesktop.zip
 
 Usage: flash this to an Arduio, and connect its serial port to the bridge.
 
 This sketch subscribes to a topic called "ledcmds" and expects messages
-of 'true' or 'false'. When it receives these it will switch the on-board led
+of 'on' or 'off'. When it receives these it will switch the on-board led
 on or off and publish its status back to the topic 'ledstatus'
-
 
 */
 
 char inputBuffer[80];
-
 
 char *readLine(char *buff) {
   delay(100);
@@ -27,14 +27,12 @@ char *readLine(char *buff) {
   return buff;
 }
 
-
 void setup() {
   // initialize digital pin 13 as an output.
   pinMode(13, OUTPUT);
   Serial.begin(9600);
   Serial.println("subscribe:ledcmds");
 }
-
 
 int old_val;
 int diff, val;
@@ -55,10 +53,5 @@ void loop() {
     }
   }
   delay(100);
-  
-  
-
-
-  
 
 }
