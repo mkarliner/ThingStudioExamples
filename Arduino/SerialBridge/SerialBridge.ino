@@ -10,7 +10,7 @@ You can get this from http://www.thingstud.io/downloads/ThingDesktop.zip
 Usage: flash this to an Arduio, and connect its serial port to the bridge.
 
 This sketch subscribes to a topic called "ledcmds" and expects messages
-of 'on' or 'off'. When it receives these it will switch the on-board led
+of 'true' or 'false'. When it receives these it will switch the on-board led
 on or off and publish its status back to the topic 'ledstatus'
 
 */
