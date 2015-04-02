@@ -1,6 +1,7 @@
 #include <string.h>
 
 /*
+
 This example shows how to use the MQTT <--> Serial bridge
 feature in  ThingDesktop. 
 
