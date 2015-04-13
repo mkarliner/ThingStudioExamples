@@ -18,12 +18,10 @@ on or off and publish its status back to the topic 'ledstatus'
 char inputBuffer[80];
 
 char *readLine(char *buff) {
-  delay(100);
   while(Serial.available()>0){
     *buff = Serial.read();
     buff++;
   }
-  buff++;
   *buff=0;
   return buff;
 }
@@ -53,6 +51,5 @@ void loop() {
       Serial.println("publish:ledstatus:off");
     }
   }
-  delay(100);
 
 }
