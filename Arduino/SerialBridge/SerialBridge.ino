@@ -18,9 +18,11 @@ on or off and publish its status back to the topic 'ledstatus'
 char inputBuffer[80];
 
 char *readLine(char *buff) {
-  while(Serial.available()>0){
-    *buff = Serial.read();
+  
+  *buff = Serial.read();
+  while(*buff != '\n'){
     buff++;
+    while( (*buff = Serial.read()) == -1);
   }
   *buff=0;
   return buff;
@@ -41,14 +43,16 @@ void loop() {
   
   if(Serial.available()>0) {
     readLine(inputBuffer);
-    pch = strtok (inputBuffer,":\n");
-    pch = strtok(NULL, ":\n"); // Message
-    if(strcmp(pch, "true") == 0) {
+    pch = strtok (inputBuffer,":");
+    pch = strtok(NULL, ":"); // Message
+    //Note the escaped quote marks!
+    // ThingStudio payloads must be JSON!
+    if(strcmp(pch, "\"true\"") == 0) {
       digitalWrite(13, HIGH);
-      Serial.println("publish:ledstatus:on");
+      Serial.println("publish:ledstatus:\"on\"");
     } else {
       digitalWrite(13, LOW);
-      Serial.println("publish:ledstatus:off");
+      Serial.println("publish:ledstatus:\"off\"");
     }
   }
 

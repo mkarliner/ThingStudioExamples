@@ -16,18 +16,6 @@ the value to the 'arduinopot' topic.
 char inputBuffer[80];
 
 
-char *readLine(char *buff) {
-  delay(100);
-  while(Serial.available()>0){
-    *buff = Serial.read();
-    buff++;
-  }
-  buff++;
-  *buff=0;
-  return buff;
-}
-
-
 void setup() {
   // initialize digital pin 13 as an output.
   pinMode(13, OUTPUT);
@@ -41,11 +29,10 @@ int diff, val;
 void loop() {
  
   val = analogRead(A0);
+  delay(50);
   diff = val-old_val;
   //Serial.println(diff);
-  delay(50);
-  if(abs(diff) >3) {
-   
+  if(abs(diff) >10) {
     Serial.print("publish:arduinopot:");
     Serial.println(val);
   }
