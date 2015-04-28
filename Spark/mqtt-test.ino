@@ -1,46 +1,75 @@
 // This #include statement was automatically added by the Spark IDE.
 #include "MQTT/MQTT.h"
 
-/* This sketch does various random MQTT actions, but also messures
-values from a potentiometer on A0 and sends messages to the topic
-'sparkpot' if they change.
-*/
+Servo myservo;
 
 void callback(char* topic, byte* payload, unsigned int length);
-MQTT client("mqtt-modern-industry.com", 1883, callback);
+MQTT client("mqtt.modern-industry.com", 1883, callback);
 
-// recieve message
-void callback(char* topic, byte* payload, unsigned int length) {
+// receive message
+
+
+    int red=0;
+    int blue=0;
+    int green=0;
+
+void callback(char* intopic, byte* payload, unsigned int length) {
+    //Payloads are JSON strings, so increment past the first 
+    //quote to get to the first message character.
+    payload++;
+    //And now the payload is 1 character shorter, so copy 
+    // one less character.
     char p[length + 1];
-    memcpy(p, payload, length);
+    memcpy(p, payload, length-1);
     p[length] = NULL;
-    String message(p);
+    
+    char t[strlen(intopic)+1];
+    memcpy(t, intopic, strlen(intopic));
+    t[strlen(intopic)] = NULL;
+    
 
-    if (message.equals("RED"))    
-        RGB.color(255, 0, 0);
-    else if (message.equals("GREEN"))    
-        RGB.color(0, 255, 0);
-    else if (message.equals("BLUE"))    
-        RGB.color(0, 0, 255);
-    else    
+    String message(p);
+    String topic(t);
+    Serial.println(topic);
+    Serial.println(message);
+    if(topic.equals("/mike/sparkred")) {
+        red = atoi(p);
+        Serial.println("red");
+    }
+        
+    else if (topic.equals("/mike/sparkblue"))    
+        blue = atoi(p);
+    else if (topic.equals("/mike/sparkgreen"))    
+        green = atoi(p);
+    else if (topic.equals("/mike/sparkservo")) 
+        myservo.write(atoi(p));
+    else
         RGB.color(255, 255, 255);
-    delay(1000);
+    RGB.color(red, green, blue);
 }
 
 
 void setup() {
     RGB.control(true);
-    // Serial.begin(9600);
-    // Serial.println("Hello Mike");
+     RGB.color(0, 0, 255);
+    Serial.begin(9600);
+    delay(10000);
+    Serial.println("Hello Mike");
+    myservo.attach(A1);
     pinMode(A0, INPUT);
     
     // connect to the server
-    client.connect("sparkclient553425", "sdaf", "asdf");
+    client.connect("5sparkclient", "guest", "guest");
 
     // publish/subscribe
     if (client.isConnected()) {
+        Serial.println("Connected");
+        RGB.color(0, 255, 0);
         client.publish("textfeed","hello spark world");
-        client.subscribe("inTopic");
+        client.subscribe("/mike/sparkred");
+        client.subscribe("/mike/sparkblue");
+        client.subscribe("/mike/sparkgreen");
+        client.subscribe("/mike/sparkservo");
     }
 }
 
@@ -52,17 +81,17 @@ void loop() {
     
     if (client.isConnected()) {
         client.loop();
-        // Serial.println("LOOP");
+        //  Serial.println("LOOP");
     }
     
     val = analogRead(A0);
     int diff = abs(val - oldval);
         if(diff > 10) {
+            Serial.println(val);
             sprintf(buf, "%d", val);
-            client.publish("sparkpot", buf);
+            client.publish("/mike/sparkpot", buf);
             oldval = val;
         }
         delay(10);
       
 }
-
